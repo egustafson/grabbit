@@ -2,10 +2,11 @@
 
 import argparse
 import pika
+import sys
 
 
 def pika_callback(ch, method, properties, body):
-    print body
+    print "%r" % (body,)
 
 
 #
@@ -28,15 +29,29 @@ if __name__ == "__main__":
         creds = pika.PlainCredentials(args.username, args.password)
 
     parameters = pika.ConnectionParameters( host         = args.hosturl, 
-                                            port         = args.port, 
-                                            virtual_host = args.vhost, 
+#                                            port         = args.port, 
+#                                            virtual_host = args.vhost, 
                                             credentials  = creds )
 
-    connection = pika.BlockingConnection( parameters )
-    channel = connection.channel()
+    try:
+        connection = pika.BlockingConnection( parameters )
+    except Exception, err:
+        sys.stderr.write("Connection Failed!\n")
+        raise
+        print err
+        sys.exit(1)
 
-    channel.queue_declare(queue='grabbit')
-    channel.basic_consume( pika_callback, queue='grabbit', no_ack=True)
+    sys.stderr.write("connected...\n")
+    channel = connection.channel()
+    
+    qname = 'grabbit-666'
+    channel.queue_declare(queue=qname)
+
+    if args.exchange:
+        #channel.exchange_declare(exchange=args.exchange, type='topic')
+        channel.queue_bind(exchange=args.exchange, queue=qname, routing_key="#")
+
+    channel.basic_consume( pika_callback, queue='grabbit-666', no_ack=True)
     channel.start_consuming()
 
     print "done."
