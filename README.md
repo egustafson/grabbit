@@ -1,4 +1,0 @@
-grabbit
-=======
-
-RabbitMQ (AMQP) grep
