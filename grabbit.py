@@ -21,6 +21,7 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--vhost", help="vhost")
     parser.add_argument("-e", "--exchange", help="exchange")
     parser.add_argument("-r", "--routekey", help="routing key")
+    parser.add_argument("-q", "--queue", help="queue name")
 
     args = parser.parse_args()
 
@@ -30,7 +31,7 @@ if __name__ == "__main__":
 
     parameters = pika.ConnectionParameters( host         = args.hosturl, 
 #                                            port         = args.port, 
-#                                            virtual_host = args.vhost, 
+                                            virtual_host = args.vhost, 
                                             credentials  = creds )
 
     try:
@@ -43,15 +44,17 @@ if __name__ == "__main__":
 
     sys.stderr.write("connected...\n")
     channel = connection.channel()
+
+    qname = args.queue
     
-    qname = 'grabbit-666'
-    channel.queue_declare(queue=qname)
+    if not args.queue:
+        qname = 'grabbit-666'
+        channel.queue_declare(queue=qname, auto_delete=True, exclusive=True)
 
-    if args.exchange:
-        #channel.exchange_declare(exchange=args.exchange, type='topic')
-        channel.queue_bind(exchange=args.exchange, queue=qname, routing_key="#")
+        if args.exchange:
+            channel.queue_bind(exchange=args.exchange, queue=qname, routing_key="#")
 
-    channel.basic_consume( pika_callback, queue='grabbit-666', no_ack=True)
+    channel.basic_consume( pika_callback, queue=qname, no_ack=True)
     channel.start_consuming()
 
     print "done."
