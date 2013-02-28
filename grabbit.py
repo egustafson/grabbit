@@ -46,13 +46,17 @@ if __name__ == "__main__":
     channel = connection.channel()
 
     qname = args.queue
+    rtkey = "#"
+    
+    if args.routekey:
+        rtkey = args.routekey
     
     if not args.queue:
         qname = 'grabbit-666'
         channel.queue_declare(queue=qname, auto_delete=True, exclusive=True)
 
         if args.exchange:
-            channel.queue_bind(exchange=args.exchange, queue=qname, routing_key="#")
+            channel.queue_bind(exchange=args.exchange, queue=qname, routing_key=rtkey)
 
     channel.basic_consume( pika_callback, queue=qname, no_ack=True)
     channel.start_consuming()
