@@ -18,7 +18,7 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--username", help="username")
     parser.add_argument("-p", "--password", help="password")
     parser.add_argument("--port", type=int, default=5672)
-    parser.add_argument("-v", "--vhost", help="vhost")
+    parser.add_argument("-v", "--vhost", default="/", help="vhost")
     parser.add_argument("-e", "--exchange", help="exchange")
     parser.add_argument("-r", "--routekey", help="routing key")
     parser.add_argument("-q", "--queue", help="queue name")
