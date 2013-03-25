@@ -52,7 +52,7 @@ if __name__ == "__main__":
         rtkey = args.routekey
     
     if not args.queue:
-        qname = 'grabbit-666'
+        qname = '' # Server generated queue name
         channel.queue_declare(queue=qname, auto_delete=True, exclusive=True)
 
         if args.exchange:
