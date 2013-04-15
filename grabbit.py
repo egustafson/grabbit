@@ -14,7 +14,7 @@ def pika_callback(ch, method, properties, body):
 #
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("hosturl", help="URL / hostname of the RabbitMQ server", default='localhost')
+    parser.add_argument("hostname", help="Hostname of the RabbitMQ server", default='localhost')
     parser.add_argument("-u", "--username", help="username")
     parser.add_argument("-p", "--password", help="password")
     parser.add_argument("--port", type=int, default=5672)
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     if args.username:
         creds = pika.PlainCredentials(args.username, args.password)
 
-    parameters = pika.ConnectionParameters( host         = args.hosturl, 
+    parameters = pika.ConnectionParameters( host         = args.hostname, 
 #                                            port         = args.port, 
                                             virtual_host = args.vhost, 
                                             credentials  = creds )
