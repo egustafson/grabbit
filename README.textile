@@ -1,3 +1,72 @@
-h1. grabbit -- RabbitMQ (AMQP) grep
+h1. @grabbit.py@ -- RabbitMQ (AMQP) grep
+
+<pre>
+<code>
+usage: grabbit.py [-h] [-u USERNAME] [-p PASSWORD] [--port PORT] [-v VHOST] [-e EXCHANGE] [-r ROUTEKEY] [-q QUEUE] hostname
+
+positional arguments:
+  hostname              Hostname of the RabbitMQ server
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -u USERNAME, --username USERNAME
+                        username
+  -p PASSWORD, --password PASSWORD
+                        password
+  --port PORT
+  -v VHOST, --vhost VHOST
+                        vhost
+  -e EXCHANGE, --exchange EXCHANGE
+                        exchange
+  -r ROUTEKEY, --routekey ROUTEKEY
+                        routing key
+  -q QUEUE, --queue QUEUE
+                        queue name
+</code>
+</pre>
+
+Not all flags are required.  Different flags are required depending on
+the configuration of the Exchangeand Queue configuration to be
+consumed from.
+
+h3. Consuming from a pre-configured queue
+
+@grabbit.py -u USERNAME -p PASSWORD -q QUEUE_NAME HOSTNAME@
+
+When a queue name is provided then the following are already
+configured because the queue is already bound.  The following are
+ignored by grabbit if a queue name is provided.
+* Exchange -- queues are bound to exchange(s), the presumption is the
+exchange is bound if you provide the queue name.
+* Routing Key -- exchange-queue bindings can be done with a routing
+key, the presumption here is also that a routing key was provided
+during binding.
+
+h1. @rat.py@ -- RabbitMQ (AMQP) cat
 
 
+Consume lines from stdin, sending each line to AMQP as a message.
+
+<pre>
+<code>
+usage: rat.py [-h] [-u USERNAME] [-p PASSWORD] [--port PORT] [-v VHOST] [-e EXCHANGE] [-r ROUTEKEY] [-D] hostname
+
+positional arguments:
+  hostname              Hostname of the RabbitMQ server
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -u USERNAME, --username USERNAME
+                        username
+  -p PASSWORD, --password PASSWORD
+                        password
+  --port PORT
+  -v VHOST, --vhost VHOST
+                        vhost
+  -e EXCHANGE, --exchange EXCHANGE
+                        exchange
+  -r ROUTEKEY, --routekey ROUTEKEY
+                        routing key
+  -D, --debug           debug output
+</code>
+</pre>

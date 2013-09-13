@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import argparse
-import pika
 import sys
+import pika
 
 
 def pika_callback(ch, method, properties, body):
@@ -14,7 +14,9 @@ def pika_callback(ch, method, properties, body):
 #
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("hostname", help="Hostname of the RabbitMQ server", default='localhost')
+    parser.add_argument("hostname", 
+                        help="Hostname of the RabbitMQ server", 
+                        default='localhost')
     parser.add_argument("-u", "--username", help="username")
     parser.add_argument("-p", "--password", help="password")
     parser.add_argument("--port", type=int, default=5672)
@@ -36,11 +38,10 @@ if __name__ == "__main__":
 
     try:
         connection = pika.BlockingConnection( parameters )
-    except Exception, err:
-        sys.stderr.write("Connection Failed!\n")
-        raise
-        print err
+    except pika.exceptions.AMQPError as err:
+        sys.stderr.write("Connection Error: %s:%s\n" % (err.__class__, err))
         sys.exit(1)
+
 
     sys.stderr.write("connected...\n")
     channel = connection.channel()
@@ -56,9 +57,13 @@ if __name__ == "__main__":
         channel.queue_declare(queue=qname, auto_delete=True, exclusive=True)
 
         if args.exchange:
-            channel.queue_bind(exchange=args.exchange, queue=qname, routing_key=rtkey)
+            channel.queue_bind(exchange=args.exchange, queue=qname, 
+                               routing_key=rtkey)
 
-    channel.basic_consume( pika_callback, queue=qname, no_ack=True)
-    channel.start_consuming()
+    try:
+        channel.basic_consume( pika_callback, queue=qname, no_ack=True)
+        channel.start_consuming()
+    except pika.exceptions.AMQPError as err:
+        sys.stderr.write("AMQP Error: %s:%s\n" % (err.__class__, err))
 
     print "done."
