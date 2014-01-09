@@ -24,6 +24,8 @@ if __name__ == "__main__":
     parser.add_argument("-e", "--exchange", help="exchange")
     parser.add_argument("-r", "--routekey", help="routing key")
     parser.add_argument("-q", "--queue", help="queue name")
+    parser.add_argument("--verbose", help="verbose output",
+                        action="store_true")
 
     args = parser.parse_args()
 
@@ -40,6 +42,8 @@ if __name__ == "__main__":
         connection = pika.BlockingConnection( parameters )
     except pika.exceptions.AMQPError as err:
         sys.stderr.write("Connection Error: %s:%s\n" % (err.__class__, err))
+        if args.verbose:
+            raise
         sys.exit(1)
 
 
@@ -65,5 +69,7 @@ if __name__ == "__main__":
         channel.start_consuming()
     except pika.exceptions.AMQPError as err:
         sys.stderr.write("AMQP Error: %s:%s\n" % (err.__class__, err))
+        if args.verbose:
+            raise
 
     print "done."
