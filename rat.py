@@ -19,6 +19,7 @@ if __name__ == "__main__":
     parser.add_argument("-e", "--exchange", help="exchange")
     parser.add_argument("-r", "--routekey", type=str, default='', help="routing key")
     parser.add_argument("-D", "--debug", help="debug output", action='store_true')
+    parser.add_argument("--headers", help="messag header(s)")
 
     args = parser.parse_args()
 
@@ -49,6 +50,13 @@ if __name__ == "__main__":
     ex = args.exchange
     rt = args.routekey
     prop = pika.BasicProperties(content_type='text/plain', delivery_mode=1)
+    if args.headers:
+        headers = {}
+        for h in args.headers.split(','):
+            (k,v) = h.split('=',1)
+            headers[k.strip()] = v.strip()
+        if len(headers) > 0:
+            prop.headers = headers
 
     #
     # Consume stdin, sending each line as a message

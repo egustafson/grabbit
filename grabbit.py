@@ -6,7 +6,16 @@ import pika
 
 
 def pika_callback(ch, method, properties, body):
-    print "%r" % (body,)
+    if args.headers:
+        print("----")
+        if properties.headers:
+            for (k,v) in properties.headers.items():
+                print("{}: {}".format(k,v))
+            print("")
+        print("{}".format(body.rstrip()))
+        print(".")
+    else:
+        print("{}".format(body.rstrip()))
 
 
 #
@@ -25,6 +34,8 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--routekey", help="routing key")
     parser.add_argument("-q", "--queue", help="queue name")
     parser.add_argument("--verbose", help="verbose output",
+                        action="store_true")
+    parser.add_argument("--headers", help="print message headers",
                         action="store_true")
 
     args = parser.parse_args()
